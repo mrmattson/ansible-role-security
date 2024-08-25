@@ -1,12 +1,12 @@
 ---
 - name: Ensure SSH daemon is running.
-  service:
+  ansible.builtin.service:
     name: "{{ security_sshd_name }}"
     state: "{{ security_sshd_state }}"
 
 - name: Update SSH configuration to be more secure.
-  lineinfile:
-    dest: "{{ security_ssh_config_path }}"
+  ansible.builtin.lineinfile:
+    path: "{{ security_ssh_config_path }}"
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
     state: present
@@ -32,8 +32,8 @@
   notify: restart ssh
 
 - name: Add configured users allowed to connect over ssh
-  lineinfile:
-    dest: "{{ security_ssh_config_path }}"
+  ansible.builtin.lineinfile:
+    path: "{{ security_ssh_config_path }}"
     regexp: '^AllowUsers'
     line: "AllowUsers {{ security_ssh_allowed_users | join(' ') }}"
     state: present
@@ -44,8 +44,8 @@
   notify: restart ssh
 
 - name: Add configured groups allowed to connect over ssh
-  lineinfile:
-    dest: "{{ security_ssh_config_path }}"
+  ansible.builtin.lineinfile:
+    path: "{{ security_ssh_config_path }}"
     regexp: '^AllowGroups'
     line: "AllowGroups {{ security_ssh_allowed_groups | join(' ') }}"
     state: present
@@ -56,8 +56,8 @@
   notify: restart ssh
 
 - name: Add configured user accounts to passwordless sudoers.
-  lineinfile:
-    dest: /etc/sudoers
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
     regexp: '^{{ item }}'
     line: '{{ item }} ALL=(ALL) NOPASSWD: ALL'
     state: present
@@ -67,8 +67,8 @@
   when: security_sudoers_passwordless | length > 0
 
 - name: Add configured user accounts to passworded sudoers.
-  lineinfile:
-    dest: /etc/sudoers
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
     regexp: '^{{ item }}'
     line: '{{ item }} ALL=(ALL) ALL'
     state: present
