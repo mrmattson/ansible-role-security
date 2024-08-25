@@ -11,7 +11,7 @@
     line: "{{ item.line }}"
     state: present
     validate: 'sshd -T -f %s'
-    mode: 0644
+    mode: '0644'  # u=rw,g=r,o=r
   with_items:
     - regexp: "^PasswordAuthentication"
       line: "PasswordAuthentication {{ security_ssh_password_authentication }}"
@@ -39,7 +39,7 @@
     state: present
     create: true
     validate: 'sshd -T -f %s'
-    mode: 0644
+    mode: '0644'  # u=rw,g=r,o=r
   when: security_ssh_allowed_users | length > 0
   notify: restart ssh
 
@@ -51,7 +51,7 @@
     state: present
     create: true
     validate: 'sshd -T -f %s'
-    mode: 0644
+    mode: '0644'  # u=rw,g=r,o=r
   when: security_ssh_allowed_groups | length > 0
   notify: restart ssh
 
@@ -62,7 +62,7 @@
     line: '{{ item }} ALL=(ALL) NOPASSWD: ALL'
     state: present
     validate: 'visudo -cf %s'
-    mode: 0440
+    mode: '0440'  # u=r,g=r,o=
   with_items: "{{ security_sudoers_passwordless }}"
   when: security_sudoers_passwordless | length > 0
 
@@ -73,6 +73,6 @@
     line: '{{ item }} ALL=(ALL) ALL'
     state: present
     validate: 'visudo -cf %s'
-    mode: 0440
+    mode: '0440'  # u=r,g=r,o=
   with_items: "{{ security_sudoers_passworded }}"
   when: security_sudoers_passworded | length > 0
